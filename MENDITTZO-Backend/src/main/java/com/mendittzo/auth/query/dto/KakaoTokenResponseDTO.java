@@ -11,6 +11,7 @@ import lombok.Setter;
 // Jackson 라이브러리가 JSON 응답을 KakaoTokenResponseDTO 객체로 변환하므로 생성자 필요 X
 public class KakaoTokenResponseDTO {
 
+    // JsonProperty 없는 경우, 카멜 케이스를 스네이크로 자동 매핑 못 하는 듯
     @JsonProperty("token_type")
     private String tokenType;   // 토큰 타입 (bearer 로 고정)
     @JsonProperty("access_token")

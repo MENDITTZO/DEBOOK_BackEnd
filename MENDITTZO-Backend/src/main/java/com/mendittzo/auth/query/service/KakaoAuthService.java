@@ -90,14 +90,14 @@ public class KakaoAuthService {
     }
 
     // 3-1. 카카오 인증 서버에서 로그인 한 카카오 사용자 정보 요청하는 메소드
-    public KakaoUserInfoResponseDTO getKakaoUserInfo(KakaoUserInfoRequestDTO InfoRequest) {
+    public KakaoUserInfoResponseDTO getKakaoUserInfo(String accessToken) {
 
         // WebClient : 서버에서 외부 API 로 요청 보낼 때 사용
         WebClient webClient = WebClient.create();
 
         return webClient.get()
                 .uri("https://kapi.kakao.com/v2/user/me")
-                .header("Authorization", "Bearer " + InfoRequest.getAccessToken())
+                .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponseDTO.class) // KakaoUserInfoResponseDTO 타입으로 응답 받기
                 .block();

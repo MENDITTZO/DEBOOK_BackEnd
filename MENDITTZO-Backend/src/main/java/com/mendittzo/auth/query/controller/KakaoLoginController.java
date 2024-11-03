@@ -34,9 +34,10 @@ public class KakaoLoginController {
 
     // 3. 카카오 인증 서버에서 로그인 한 카카오 사용자 정보 요청하기
     @GetMapping("/auth/users/info")
-    public ResponseEntity<KakaoUserInfoResponseDTO> getUserInfo(@RequestBody KakaoUserInfoRequestDTO InfoRequset) {
+    public ResponseEntity<KakaoUserInfoResponseDTO> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
 
-        KakaoUserInfoResponseDTO userInfo = kakaoAuthService.getKakaoUserInfo(InfoRequset);
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        KakaoUserInfoResponseDTO userInfo = kakaoAuthService.getKakaoUserInfo(accessToken);
         return new ResponseEntity<>(userInfo, HttpStatus.OK);
     }
 }
