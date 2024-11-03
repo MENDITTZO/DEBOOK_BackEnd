@@ -11,6 +11,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
+    private static final String KAKAO_LOGIN_URL = "https://kauth.kakao.com/oauth/authorize";
+    private static final String KAKAO_TOKEN_URI = "https://kauth.kakao.com/oauth/token";
+    private static final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
+
     // 필수 쿼리 파라미터
     // (1) client_id : REST API 키
     // (2) redirect_uri : 인가 코드를 전달받을 서비스 서버의 URI
@@ -37,8 +41,8 @@ public class KakaoAuthService {
         System.out.println("DTO: clientId: " + loginUrlRequest.getClientId());
         System.out.println("DTO: redirectUri: " + loginUrlRequest.getRedirectUri());
 
-        String loginUrl = "https://kauth.kakao.com/oauth/authorize?client_id="
-                + loginUrlRequest.getClientId()
+        String loginUrl = KAKAO_LOGIN_URL
+                + "?client_id=" + loginUrlRequest.getClientId()
                 + "&redirect_uri=" + loginUrlRequest.getRedirectUri()
                 + "&response_type=code";
         return new KakaoLoginUrlResponseDTO(loginUrl);
@@ -68,7 +72,7 @@ public class KakaoAuthService {
 
         try {
             return webClient.post()
-                    .uri("https://kauth.kakao.com/oauth/token")
+                    .uri(KAKAO_TOKEN_URI)
                     .header("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
                     // application/x-www-form-urlencoded;charset=utf-8 형식으로 body 삽입
                     .body(BodyInserters.fromFormData("grant_type", "authorization_code")
@@ -96,7 +100,7 @@ public class KakaoAuthService {
         WebClient webClient = WebClient.create();
 
         return webClient.get()
-                .uri("https://kapi.kakao.com/v2/user/me")
+                .uri(KAKAO_USER_INFO_URI)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponseDTO.class) // KakaoUserInfoResponseDTO 타입으로 응답 받기
