@@ -1,4 +1,4 @@
-package com.mendittzo.auth.query.dto;
+package com.mendittzo.auth.query.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -20,6 +20,6 @@ public class KakaoTokenResponseDTO {
     private Long expiresIn; // 액세스 토큰의 만료 시간(초)
     @JsonProperty("refresh_token")
     private String refreshToken;    // 사용자 리프레시 토큰 값
-    @JsonProperty("refresh+token_expires_in")
+    @JsonProperty("refresh_token_expires_in")
     private Long refreshTokenExpiresIn; // 리프레시 토큰 만료 시간(초)
 }

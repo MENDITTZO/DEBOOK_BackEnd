@@ -32,5 +32,24 @@ public class User {
     @CreatedDate
     private LocalDateTime createDatetime;   // 회원가입 날짜
     private LocalDateTime withdrawDatetime; // 회원탈퇴 날짜
+    private Long loginId;   // 소셜 로그인 사용자 고유 id
+
+    public User(Long userId, String email, String nickName, Status status, String authProvider, String profileImg, LocalDateTime createDatetime, LocalDateTime withdrawDatetime, Long loginId) {
+
+        this.userId = userId;
+        this.email = email;
+        this.nickName = nickName;
+        this.status = status;
+        this.authProvider = authProvider;
+        this.profileImg = profileImg;
+        this.createDatetime = createDatetime;
+        this.withdrawDatetime = withdrawDatetime;
+        this.loginId = loginId;
+    }
+
+    public static User create(Long UserId, String email, String nickName, Status status, String authProvider, String profileImg, LocalDateTime createDatetime, LocalDateTime withdrawDatetime, Long loginId) {
+
+        return new User(UserId, email, nickName, status, authProvider, profileImg, createDatetime, withdrawDatetime, loginId);
+    }
 
 }

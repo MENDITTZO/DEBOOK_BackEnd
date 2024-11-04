@@ -1,4 +1,4 @@
-package com.mendittzo.auth.query.dto;
+package com.mendittzo.auth.query.application.dto;
 
 import lombok.Getter;
 import lombok.Setter;

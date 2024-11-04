@@ -1,8 +1,7 @@
-package com.mendittzo.auth.query.dto;
+package com.mendittzo.auth.query.application.dto;
 
 // 카카오 인증 서버에서 받는 카카오 이용자 정보 응답
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class KakaoUserInfoResponseDTO {
 
-    private Long id;    // 카카오 고유 사용자 ID
+    private Long LoginId;    // 카카오 고유 사용자 ID
 }
