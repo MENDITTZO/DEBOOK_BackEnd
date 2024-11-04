@@ -15,7 +15,7 @@ public class UserInfoResponseDTO {
 
     private Long userId;    // 회원 id
     private String email;   // 회원 이메일
-    private String nickName;    // 회원 닉네임
+    private String nickname;    // 회원 닉네임
     private Status status = Status.PENDING; // 회원가입 시 추가 정보(닉네임) 입력해야 ACTIVE 로 변경
     private String authProvider;    // 소셜 로그인 제공자(카카오, 구글, 네이버)
     private String profileImg;  // 프로필 이미지 url

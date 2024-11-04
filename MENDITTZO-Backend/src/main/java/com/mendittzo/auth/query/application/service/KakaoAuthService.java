@@ -2,6 +2,7 @@ package com.mendittzo.auth.query.application.service;
 
 import com.mendittzo.auth.query.application.dto.*;
 import com.mendittzo.user.command.application.dto.UserCreateRequestDTO;
+import com.mendittzo.user.command.application.service.UserCommandService;
 import com.mendittzo.user.command.domain.aggregate.User;
 import com.mendittzo.user.command.domain.repository.UserRepository;
 import com.mendittzo.user.command.mapper.UserMapper;
@@ -25,6 +26,7 @@ public class KakaoAuthService {
     private static final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
 
     private final UserRepository userRepository;
+    private final UserCommandService userCommandService;
 
     // 필수 쿼리 파라미터
     // (1) client_id : REST API 키
@@ -116,12 +118,13 @@ public class KakaoAuthService {
         User existsUser = userRepository.findByLoginIdAndAuthProvider(
                 kakaoUserInfo.getLoginId(), "KAKAO");
 
+
         // DB에 사용자가 없으면 생성
         if (existsUser == null) {
             UserCreateRequestDTO userRequestDTO = new UserCreateRequestDTO(
                     null,
                     null,
-                    null,
+                    userCommandService.generateUserNickname(), // 닉네임 랜덤 생성
                     null,
                     "KAKAO",
                     null,
@@ -129,7 +132,13 @@ public class KakaoAuthService {
                     null,
                     kakaoUserInfo.getLoginId()
             );
+
+
             User newUser = UserMapper.toEntity(userRequestDTO);
+
+            log.info("생성된 닉네임: {}", userCommandService.generateUserNickname());
+            log.info("생성된 User 엔터티: {}", newUser);
+
             return userRepository.save(newUser);
         }
         return existsUser;
@@ -151,10 +160,9 @@ public class KakaoAuthService {
         log.info("kakaoUserInfo.getLoginId() : " + kakaoUserInfo.getLoginId());
         // todo: 확인용
 
-        // 3. 카카오 고유 사용자 id 로 DB에서 서비스 사용자 조회 및 저장
+        // 3. 카카오 고유 사용자 id 로 DB 에서 서비스 사용자 조회 및 저장
         User user = findOrCreateUser(kakaoUserInfo);
 
         return new UserResponseDTO(user);
-
     }
 }
