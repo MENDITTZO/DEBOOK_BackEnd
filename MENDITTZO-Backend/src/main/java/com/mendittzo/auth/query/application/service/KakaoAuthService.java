@@ -6,6 +6,7 @@ import com.mendittzo.user.command.domain.aggregate.User;
 import com.mendittzo.user.command.domain.repository.UserRepository;
 import com.mendittzo.user.command.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,8 +14,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoAuthService {
@@ -92,6 +93,8 @@ public class KakaoAuthService {
     // 3-1. 카카오 인증 서버에서 로그인 한 카카오 사용자 정보 요청하는 메소드
     public KakaoUserInfoResponseDTO getKakaoUserInfo(String accessToken) {
 
+        log.info("getKakaoUserInfo 메소드 실행");
+
         // WebClient : 서버에서 외부 API 로 요청 보낼 때 사용
         WebClient webClient = WebClient.create();
 
@@ -144,8 +147,9 @@ public class KakaoAuthService {
         // 2. 액세스 토큰으로 카카오 고유 사용자 id 요청
         KakaoUserInfoResponseDTO kakaoUserInfo = getKakaoUserInfo(accessToken);
 
+        log.info("카카오 고유 사용자 id kakaoUserInfo: " + kakaoUserInfo);
+        log.info("kakaoUserInfo.getLoginId() : " + kakaoUserInfo.getLoginId());
         // todo: 확인용
-        System.out.println("카카오 고유 사용자 id: " + kakaoUserInfo.getLoginId());
 
         // 3. 카카오 고유 사용자 id 로 DB에서 서비스 사용자 조회 및 저장
         User user = findOrCreateUser(kakaoUserInfo);
