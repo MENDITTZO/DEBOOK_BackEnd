@@ -21,3 +21,6 @@ kakao:
   client_id:
     rest_api_key: ${kakao.client_id.rest_api_key}
   redirect_uri: ${kakao.redirect_uri}
+
+token:
+  secret: ${token.secret}
