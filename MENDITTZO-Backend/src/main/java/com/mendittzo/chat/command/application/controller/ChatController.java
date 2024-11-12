@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -23,6 +24,12 @@ public class ChatController {
 
     @MessageMapping("/chat/send")
     public void sendMessage(ChatDTO chatDTO) {
+        // 전송 시간이 없을 경우 현재 시간을 설정
+        if (chatDTO.getCreateDatetime() == null) {
+            chatDTO.setCreateDatetime(LocalDateTime.now());
+        }
+
+        // 메시지를 Redis에 저장
         chatService.saveChat(chatDTO);
 
         // 특정 채팅방에 메시지 전송
@@ -32,7 +39,7 @@ public class ChatController {
 
     @GetMapping("/{chatroomId}")
     public ResponseEntity<List<ChatDTO>> getChatsByChatroomId(@PathVariable Long chatroomId) {
-        List<ChatDTO> chats = chatService.getChatsByChatroomId(chatroomId);
+        List<ChatDTO> chats = chatService.getChats(chatroomId);
         return ResponseEntity.ok(chats);
     }
 }
