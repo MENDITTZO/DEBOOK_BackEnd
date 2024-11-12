@@ -25,7 +25,7 @@ public class GeminiService {
 
     @Qualifier("geminiRestTemplate")
     @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Value("${gemini.api.url}")
     private String apiUrl;
