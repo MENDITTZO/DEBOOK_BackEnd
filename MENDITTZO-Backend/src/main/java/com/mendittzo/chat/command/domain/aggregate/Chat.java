@@ -20,16 +20,16 @@ public class Chat {
 
     private LocalDateTime createDatetime;
 
-    private Long userId;
+    private String nickname;
 
     private Long chatroomId;
 
     @Builder
-    public Chat(String chatId, String chatContent, LocalDateTime createDatetime, Long userId, Long chatroomId) {
+    public Chat(String chatId, String chatContent, LocalDateTime createDatetime, String nickname, Long chatroomId) {
         this.chatId = chatId;
         this.chatContent = chatContent;
         this.createDatetime = createDatetime;
-        this.userId = userId;
+        this.nickname = nickname;
         this.chatroomId = chatroomId;
     }
 }
