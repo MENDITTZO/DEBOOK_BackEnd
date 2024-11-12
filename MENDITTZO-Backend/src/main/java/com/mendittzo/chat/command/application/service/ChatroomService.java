@@ -36,8 +36,7 @@ public class ChatroomService {
                 .build();
 
         Chatroom savedChatRoom = chatroomRepository.save(chatRoom);
-
-        return new ChatroomDTO(savedChatRoom);
+        return ChatroomDTO.fromEntity(savedChatRoom, 0L);
     }
 
     @Transactional(readOnly = true)
@@ -45,8 +44,9 @@ public class ChatroomService {
         return chatroomRepository.findAll()
                 .stream()
                 .map(chatroom -> {
-                    long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(chatroom.getChatroomId(), ChatroomUserInfoStatus.ACTIVE);
-                    return new ChatroomDTO(chatroom, activeMemberCount);
+                    long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(
+                            chatroom.getChatroomId(), ChatroomUserInfoStatus.ACTIVE);
+                    return ChatroomDTO.fromEntity(chatroom, activeMemberCount);
                 })
                 .collect(Collectors.toList());
     }
@@ -56,8 +56,9 @@ public class ChatroomService {
         Chatroom chatroom = chatroomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
 
-        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(id, ChatroomUserInfoStatus.ACTIVE);
-        return new ChatroomDTO(chatroom, activeMemberCount);
+        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(
+                id, ChatroomUserInfoStatus.ACTIVE);
+        return ChatroomDTO.fromEntity(chatroom, activeMemberCount);
     }
 
     @Transactional
@@ -66,27 +67,36 @@ public class ChatroomService {
                 .orElseThrow(() -> new RuntimeException("Chat room not found"));
         User user = userRepository.findByLoginId(userId);
 
-        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(chatroomId, ChatroomUserInfoStatus.ACTIVE);
+        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(
+                chatroomId, ChatroomUserInfoStatus.ACTIVE);
         if (activeMemberCount >= chatroom.getMaxMemberCount()) {
             throw new RuntimeException("Chat room is full");
         }
 
-        ChatroomUserInfo userInfo = new ChatroomUserInfo(chatroom, user.getUserId(), ChatroomUserInfoStatus.ACTIVE);
-        chatroomUserInfoRepository.save(userInfo);
-        return new ChatroomDTO(chatroom, activeMemberCount + 1);
+        if (!chatroomUserInfoRepository.existsByChatroom_ChatroomIdAndUserIdAndChatroomUserInfoStatus(
+                chatroomId, user.getUserId(), ChatroomUserInfoStatus.ACTIVE)) {
+            ChatroomUserInfo userInfo = new ChatroomUserInfo(chatroom, user.getUserId(), ChatroomUserInfoStatus.ACTIVE);
+            chatroomUserInfoRepository.save(userInfo);
+            return ChatroomDTO.fromEntity(chatroom, activeMemberCount + 1);
+        }
+
+        return ChatroomDTO.fromEntity(chatroom, activeMemberCount);
     }
 
     @Transactional
     public ChatroomDTO leaveChatroom(Long chatroomId, Long userId) {
         User user = userRepository.findByLoginId(userId);
-        ChatroomUserInfo userInfo = chatroomUserInfoRepository.findByChatroom_ChatroomIdAndUserIdAndChatroomUserInfoStatus(chatroomId, user.getUserId(), ChatroomUserInfoStatus.ACTIVE)
+        ChatroomUserInfo userInfo = chatroomUserInfoRepository
+                .findByChatroom_ChatroomIdAndUserIdAndChatroomUserInfoStatus(
+                        chatroomId, user.getUserId(), ChatroomUserInfoStatus.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("User is not in the chat room"));
 
         userInfo.deactivate();
         chatroomUserInfoRepository.save(userInfo);
 
         Chatroom chatroom = userInfo.getChatroom();
-        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(chatroomId, ChatroomUserInfoStatus.ACTIVE);
-        return new ChatroomDTO(chatroom, activeMemberCount);
+        long activeMemberCount = chatroomUserInfoRepository.countByChatroom_ChatroomIdAndChatroomUserInfoStatus(
+                chatroomId, ChatroomUserInfoStatus.ACTIVE);
+        return ChatroomDTO.fromEntity(chatroom, activeMemberCount);
     }
 }
